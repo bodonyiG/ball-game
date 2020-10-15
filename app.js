@@ -3,6 +3,7 @@ const c = canvas.getContext("2d");
 const scoreEnd = document.querySelector("#scoreEnd");
 const scoreGame = document.querySelector("#scoreGame");
 const endTable = document.querySelector(".end-title");
+const startButton = document.querySelector(".button");
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -12,7 +13,17 @@ const center = {
   y: canvas.height / 2
 }
 
+let score = 0;
+let continueAnimation = true;
+c.fillStyle = "black";
+c.fillRect(0, 0, canvas.width, canvas.height);
+const friction = .98;
 
+var projectiles = [];
+var enemies = [];
+var particles = [];
+
+//Classes ------------------------------------------------------------------
 class Player {
   constructor(x, y, radius, color) {
     this.x = x;
@@ -74,7 +85,6 @@ class Enemy {
 
 }
 
-const friction = .98;
 class Particle {
   constructor(x, y, radius, color, velocity) {
     this.x = x;
@@ -108,10 +118,6 @@ class Particle {
 
 const player = new Player(center.x, center.y, 25, "white");
 
-const projectiles = [];
-const enemies = [];
-const particles = [];
-
 function spawnEnemies() {
   setInterval(() => {
     const radius = Math.random() * (30 - 4) + 4;
@@ -136,15 +142,13 @@ function spawnEnemies() {
 
 }
 
-let animationID;
-let score = 0;
-c.fillStyle = "black";
-c.fillRect(0, 0, canvas.width, canvas.height);
-
 
 // ANIMATE ------------------------------------------------------------------------
 function animate() {
-  animationID = window.requestAnimationFrame(animate);
+  if(continueAnimation == true){
+    window.requestAnimationFrame(animate);
+    // window.animation = requestAnimationFrame(animate);
+  }
   // c.clearRect(0, 0, canvas.width, canvas.height);  //clearing
   c.fillStyle = "rgba(0,0,0, .1)";
   c.fillRect(0, 0, canvas.width, canvas.height); //clearing
@@ -153,9 +157,9 @@ function animate() {
   // Render particles
   particles.forEach((particle, index) => {
 
-    if(particle.alpha <= 0){
-      particles.splice(index,1);
-    }else{
+    if (particle.alpha <= 0) {
+      particles.splice(index, 1);
+    } else {
       particle.update();
     }
   })
@@ -170,18 +174,16 @@ function animate() {
     }
   });
 
-
+  //Collisions
   enemies.forEach((enemy, eIndex) => {
     enemy.update();
     const dist = Math.hypot(player.x - enemy.x, player.y - enemy.y);
     if (dist - (enemy.radius + player.radius) < 1) {
-      //endgame
-      cancelAnimationFrame(animationID);
-      scoreEnd.innerHTML = score
-      endTable.style.display = "flex";
-      score = 0;
+      //End game
+      death();
+
     }
-    //Projectile loop
+
     projectiles.forEach((projectile, pIndex) => {
       const hit = projectile.radius / 2 + enemy.radius / 2;
       const dist = Math.hypot(projectile.x - enemy.x, projectile.y - enemy.y);
@@ -190,17 +192,16 @@ function animate() {
       if (dist - enemy.radius - projectile.radius < 1) {
 
         //Creating EXPLOSION PARTICLES
-        for(i=0; i< enemy.radius; i++){
+        for (i = 0; i < enemy.radius; i++) {
           particles.push(new Particle(
             projectile.x,
-             projectile.y,
-             Math.random()*(3-1)+1,
-             enemy.color,
-             {
-               x: (Math.random()-.5)*7*Math.random(),
-               y:(Math.random()-.5)*7*Math.random()
-             }
-           ));
+            projectile.y,
+            Math.random() * (3 - 1) + 1,
+            enemy.color, {
+              x: (Math.random() - .5) * 7 * Math.random(),
+              y: (Math.random() - .5) * 7 * Math.random()
+            }
+          ));
         }
 
         if (enemy.radius - 10 > 10) {
@@ -232,30 +233,56 @@ function animate() {
 }
 
 
-window.addEventListener("click", function(event) {
-  // console.log(projectiles);
-  const angle = Math.atan2(event.clientY - center.y, event.clientX - center.x);
-  const velocity = {
-    x: Math.cos(angle) * 6,
-    y: Math.sin(angle) * 6
-  };
 
-  projectiles.push(new Projectile(
-    center.x,
-    center.y,
-    5,
-    "white",
-    velocity
-  ));
+function death() {
+  continueAnimation = false;
+  scoreEnd.innerHTML = score
+  startButton.innerHTML = "Restart";
+  endTable.style.display = "flex";
+  c.fillStyle = rgba(0,0,0,.8);
+  c.fillRect(0, 0, canvas.width, canvas.height);
+  // window.removeEventListener("click");
+}
+
+
+
+startButton.addEventListener("click", function() {
+  endTable.style.display = "none";
+  continueAnimation = true;
+  projectiles = [];
+  enemies = [];
+  particles = [];
+  score = 0;
+  scoreGame.innerHTML = score;
+
+  window.addEventListener("click", function(event) {
+    // console.log(projectiles);
+    const angle = Math.atan2(event.clientY - center.y, event.clientX - center.x);
+    const velocity = {
+      x: Math.cos(angle) * 6,
+      y: Math.sin(angle) * 6
+    };
+
+    projectiles.push(new Projectile(
+      center.x,
+      center.y,
+      5,
+      "white",
+      velocity
+    ));
+
+  });
+  animate();
+  spawnEnemies();
+  c.fillStyle = "black";
+  c.fillRect(0, 0, canvas.width, canvas.height);
+
 
 });
 
 
 
 
-
-animate();
-spawnEnemies();
 
 
 // function shrink(object, key) {
