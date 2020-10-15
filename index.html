@@ -1,9 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
 
-<style media="screen">
-  body{
-    margin:0;
-  }
-</style>
+<head>
+  <meta charset="utf-8">
+  <title></title>
 
-<canvas ></canvas>
-<script src="./app.js" > </script>
+  <!-- Google fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Monoton&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+
+  <style media="screen">
+    body {
+      margin: 0;
+
+
+    }
+
+    span{
+      margin-bottom: 40px;
+    }
+
+    .end-title {
+      font-family: 'Monoton', cursive;
+      width: 350px;
+      height: 150px;
+      min-width: 200px;
+      border-radius: 5px;
+      display: none;
+      background-color: white;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      justify-content: center;
+      align-items: center;
+      font-size: 2.3rem;
+      color: hsl(20, 70%, 50%);
+      transition: .8s;
+
+    }
+
+
+
+    .score {
+      font-family: 'Indie Flower', cursive;
+      color: white;
+      position: absolute;
+      left: 20px;
+      top: 20px;
+    }
+
+    .button{
+      margin-bottom: 0;
+      position: absolute;
+      left: 50%;
+      bottom: 30px;
+      transform: translate(-50%, 0);
+      border: none;
+      border-radius: 5px;
+      width: 50%;
+      height: 30px;
+      background-color: hsl(270, 30%, 85%);
+      font-family: 'Indie Flower', cursive;
+      font-size: 1.2rem;
+      transition: .6s;
+    }
+
+    .button:hover{
+      width: 55%;
+    }
+
+
+    .unselectable {
+      -moz-user-select: none;
+      -khtml-user-select: none;
+      -webkit-user-select: none;
+
+      /*
+     Introduced in Internet Explorer 10.
+     See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
+   */
+      -ms-user-select: none;
+      user-select: none;
+    }
+  </style>
+
+  <div class="score unselectable">
+    <span>Score: </span>
+    <span  id="scoreGame"> 0</span>
+  </div>
+  <div class="end-title unselectable">
+    <span>Score: </span>
+    <span id="scoreEnd"> 0</span>
+    <br>
+    <span class="button">Start</span>
+  </div>
+  <canvas></canvas>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.5.1/gsap.min.js" integrity="sha512-IQLehpLoVS4fNzl7IfH8Iowfm5+RiMGtHykgZJl9AWMgqx0AmJ6cRWcB+GaGVtIsnC4voMfm8f2vwtY+6oPjpQ==" crossorigin="anonymous"></script>
+  <script src="./app.js"> </script>
+
+</body>
+
+</html>
